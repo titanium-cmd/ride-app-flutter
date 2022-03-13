@@ -105,7 +105,7 @@ class _HomePageState extends State<HomePage> {
     try {
       String driverToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwYXlsb2FkIjp7InVzZXJfaWQiOjEwLCJwaG9uZV9udW1iZXIiOiIyMzMyMDQ5Mjc1OTAiLCJyb2xlIjoiZHJpdmVyIn0sImlhdCI6MTY0NzE4NDE2MiwiZXhwIjoxNjQ3NDQzMzYyfQ.ZLWsLjWkKhZkvQmRSZnv-gyXTEuvx6e48yVv25C2GLc';
       String customerToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwYXlsb2FkIjp7InVzZXJfaWQiOjEsInBob25lX251bWJlciI6IjIzMzI0NTQzNjc1NyIsInJvbGUiOiJjdXN0b21lciJ9LCJpYXQiOjE2NDcxMjM5MzQsImV4cCI6MTY0NzM4MzEzNH0.SyAsYHh0ZNv0YABuFt7SP1bkp2yL8bgUdKgrGIg26LM';
-      socket = io("ws://10.0.2.2:4000", <String, dynamic>{
+      socket = io("https://kickz-staging.herokuapp.com", <String, dynamic>{
         "transports": ["websocket"],
         "autoConnect": false,
         "extraHeaders": { "Authorization": "Bearer ${widget.role == 'driver' ? driverToken : customerToken }" }
