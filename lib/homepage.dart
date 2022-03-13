@@ -16,27 +16,33 @@ class _HomePageState extends State<HomePage> {
   Map resDet = {};
   String status = 'pending';
   String response = "connecting to socket...";
-
+  
   @override
   void initState() {
     initializeSockets();
     super.initState();
   }
   
-  void requestRide(String promoCode){
-    socket.emit(CUSTOMER_RIDE_REQUEST,
+  void customerDispatchRide(){
+    socket.emit(CUSTOMER_RIDE_DISPATCH,
       {
-        "socket_id": socket.id,
-        "promo_code": promoCode,
-        "vehicle_type": "exclusive",
+        "actual_total_cost": 5035.5,
+        "estimated_total_cost": 10,
+        "discounted_price": 4531.95,
+        "vehicle_name": "range rover",
+        "vehicle_types": "exclusive",
+        "id": 1,
+        "base_fee": 5.5,
+        "distance": 5000,
+        "time": 20,
+        "selected_promo_id": 1,
         "pickup_longitude": -0.1869644,
         "pickup_latitude": 5.6037168,
         "drop_off_latitude": 5.6037168,
         "drop_off_longitude": -0.1869644,
-        "sentAt": DateTime.now().toLocal().toString().substring(0, 16),
       }
     );
-    socket.on(CUSTOMER_RIDE_REQUEST, (res){
+    socket.on(CUSTOMER_RIDE_DISPATCH, (res){
       debugPrint(res.toString());
       setState(() {
         response = res['message'].toString();
@@ -92,10 +98,10 @@ class _HomePageState extends State<HomePage> {
   }
 
   void cancelRide(){
-    socket.emit(RIDE_COMPLETION, {
+    socket.emit(RIDE_CANCELLATION, {
       "ride_id": resDet['ride_id']
     });
-    socket.on(RIDE_COMPLETION, (data){
+    socket.on(RIDE_CANCELLATION, (data){
       debugPrint('res:: '+data.toString());
       setState(() {
         response = data['success'].toString();
@@ -105,9 +111,8 @@ class _HomePageState extends State<HomePage> {
 
   void initializeSockets(){
     try {
-      debugPrint('connecting...');
-      String driverToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwYXlsb2FkIjp7InVzZXJfaWQiOjMsInBob25lX251bWJlciI6IjIzMzIwNDkyNzU5MCIsInJvbGUiOiJkcml2ZXIifSwiaWF0IjoxNjQ2MzM4MTY1LCJleHAiOjE2NDY1OTczNjV9.6LVlzNfxufc-IdT5SHL3JmgwY3wAuJoQr7Ppjp2WjZ4';
-      String customerToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwYXlsb2FkIjp7InVzZXJfaWQiOjEsInBob25lX251bWJlciI6IjIzMzU1NjUxMDU1NSIsInJvbGUiOiJjdXN0b21lciJ9LCJpYXQiOjE2NDYzMzc4MzEsImV4cCI6MTY0NjU5NzAzMX0.YGy-KQBjZqlI2ATczhdURh8MHK5kL0orm5IUZpVd2B8';
+      String driverToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwYXlsb2FkIjp7InVzZXJfaWQiOjEwLCJwaG9uZV9udW1iZXIiOiIyMzMyMDQ5Mjc1OTAiLCJyb2xlIjoiZHJpdmVyIn0sImlhdCI6MTY0NjkwMDY3OSwiZXhwIjoxNjQ3MTU5ODc5fQ.ZE44TB0wxB6g9EgsWyNG6A86GYFGPvBEIrD76FIDX8A';
+      String customerToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwYXlsb2FkIjp7InVzZXJfaWQiOjEsInBob25lX251bWJlciI6IjIzMzU1NjUxMDU1NSIsInJvbGUiOiJjdXN0b21lciJ9LCJpYXQiOjE2NDY4NzU4OTQsImV4cCI6MTY0NzEzNTA5NH0.lwrxqRYfKb_Y3Qh_UN5_LYCwX-SYZxsAGJ1TsgdVRPc';
       socket = io("ws://10.0.2.2:4000", <String, dynamic>{
         "transports": ["websocket"],
         "autoConnect": false,
@@ -138,6 +143,10 @@ class _HomePageState extends State<HomePage> {
         setState(() {
           response = 'DISPATCH: New location shared on this room';
         });
+      });
+
+      socket.on(RIDE_CANCELLATION, (data){
+
       });
 
       socket.on(RIDE_ON_TRIP, (data){
@@ -202,9 +211,9 @@ class _HomePageState extends State<HomePage> {
               ),
               const SizedBox(height: 20),
               TextButton(
-                child: const Text('request', style: TextStyle(color: Colors.white),),
+                child: const Text('customer ride dispatch', style: TextStyle(color: Colors.white),),
                 onPressed: (){
-                  requestRide(_promoCodeController.text);
+                  customerDispatchRide();
                 }, 
                 style: TextButton.styleFrom(
                   backgroundColor: Colors.blue,

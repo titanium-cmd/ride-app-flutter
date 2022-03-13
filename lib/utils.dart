@@ -11,3 +11,4 @@ const RIDE_COMPLETION = 'ride-completion';
 const RIDE_ON_DISPATCH = 'ride-on-dispatch';
 const RIDE_ON_TRIP = 'ride-on-trip';
 const NEW_USER = 'new-user';
+const CUSTOMER_RIDE_DISPATCH = 'customer-ride-dispatch';
