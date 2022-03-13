@@ -26,16 +26,8 @@ class _HomePageState extends State<HomePage> {
   void customerDispatchRide(){
     socket.emit(CUSTOMER_RIDE_DISPATCH,
       {
-        "actual_total_cost": 5035.5,
-        "estimated_total_cost": 10,
-        "discounted_price": 4531.95,
-        "vehicle_name": "range rover",
-        "vehicle_types": "exclusive",
-        "id": 1,
-        "base_fee": 5.5,
         "distance": 5000,
         "time": 20,
-        "selected_promo_id": 1,
         "pickup_longitude": -0.1869644,
         "pickup_latitude": 5.6037168,
         "drop_off_latitude": 5.6037168,
@@ -111,8 +103,8 @@ class _HomePageState extends State<HomePage> {
 
   void initializeSockets(){
     try {
-      String driverToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwYXlsb2FkIjp7InVzZXJfaWQiOjEwLCJwaG9uZV9udW1iZXIiOiIyMzMyMDQ5Mjc1OTAiLCJyb2xlIjoiZHJpdmVyIn0sImlhdCI6MTY0NjkwMDY3OSwiZXhwIjoxNjQ3MTU5ODc5fQ.ZE44TB0wxB6g9EgsWyNG6A86GYFGPvBEIrD76FIDX8A';
-      String customerToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwYXlsb2FkIjp7InVzZXJfaWQiOjEsInBob25lX251bWJlciI6IjIzMzU1NjUxMDU1NSIsInJvbGUiOiJjdXN0b21lciJ9LCJpYXQiOjE2NDY4NzU4OTQsImV4cCI6MTY0NzEzNTA5NH0.lwrxqRYfKb_Y3Qh_UN5_LYCwX-SYZxsAGJ1TsgdVRPc';
+      String driverToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwYXlsb2FkIjp7InVzZXJfaWQiOjEwLCJwaG9uZV9udW1iZXIiOiIyMzMyMDQ5Mjc1OTAiLCJyb2xlIjoiZHJpdmVyIn0sImlhdCI6MTY0NzE4NDE2MiwiZXhwIjoxNjQ3NDQzMzYyfQ.ZLWsLjWkKhZkvQmRSZnv-gyXTEuvx6e48yVv25C2GLc';
+      String customerToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwYXlsb2FkIjp7InVzZXJfaWQiOjEsInBob25lX251bWJlciI6IjIzMzI0NTQzNjc1NyIsInJvbGUiOiJjdXN0b21lciJ9LCJpYXQiOjE2NDcxMjM5MzQsImV4cCI6MTY0NzM4MzEzNH0.SyAsYHh0ZNv0YABuFt7SP1bkp2yL8bgUdKgrGIg26LM';
       socket = io("ws://10.0.2.2:4000", <String, dynamic>{
         "transports": ["websocket"],
         "autoConnect": false,
