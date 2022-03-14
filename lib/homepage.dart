@@ -23,8 +23,8 @@ class _HomePageState extends State<HomePage> {
     super.initState();
   }
   
-  void customerDispatchRide(){
-    socket.emit(CUSTOMER_RIDE_DISPATCH,
+  void customerRideRequest(){
+    socket.emit(CUSTOMER_RIDE_REQUEST,
       {
         "distance": 5000,
         "time": 20,
@@ -37,7 +37,7 @@ class _HomePageState extends State<HomePage> {
         "drop_off_longitude": -0.1869644,
       }
     );
-    socket.on(CUSTOMER_RIDE_DISPATCH, (res){
+    socket.on(CUSTOMER_RIDE_REQUEST, (res){
       debugPrint(res.toString());
       setState(() {
         response = res['message'].toString();
