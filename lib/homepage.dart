@@ -206,7 +206,7 @@ class _HomePageState extends State<HomePage> {
               ),
               const SizedBox(height: 20),
               TextButton(
-                child: const Text('customer ride dispatch', style: TextStyle(color: Colors.white),),
+                child: const Text('customer ride request', style: TextStyle(color: Colors.white),),
                 onPressed: (){
                   customerRideRequest();
                 }, 
