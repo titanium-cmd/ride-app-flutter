@@ -28,6 +28,8 @@ class _HomePageState extends State<HomePage> {
       {
         "distance": 5000,
         "time": 20,
+        "origin_description": '',
+        "destination_description": '',
         "vehicle_id": 1,
         "pickup_longitude": -0.1869644,
         "pickup_latitude": 5.6037168,
