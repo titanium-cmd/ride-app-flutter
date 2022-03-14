@@ -222,16 +222,12 @@ class _HomePageState extends State<HomePage> {
                   hintText: 'Enter promo code if any'
                 ),
               ),
-              Consumer<SocketHelper>(
-                builder: ((context, value, child) => 
-                  Text(value.response, style: TextStyle(
-                      fontSize: 20, fontWeight: FontWeight.bold,
-                      color: status == 'success' ? Colors.green 
-                      : status == 'failed' ? Colors.red :
-                      Colors.amber 
-                    )
-                  )
-                ),
+              Text(SocketHelper().response, style: TextStyle(
+                  fontSize: 20, fontWeight: FontWeight.bold,
+                  color: status == 'success' ? Colors.green 
+                  : status == 'failed' ? Colors.red :
+                  Colors.amber 
+                )
               ),
               const SizedBox(height: 20),
               TextButton(onPressed: ()=>Navigator.push(context, MaterialPageRoute(builder: (builder)=>OtherPage())), child: Text('Next Page')),
