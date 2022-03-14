@@ -104,6 +104,24 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
+  void driverActivenessUpdate (){
+    //if you want to update the is online attribute
+    socket.emit(DRIVER_ACTIVENESS_UPDATE, {
+      "is_online": true
+    });
+
+    //if you want to update is_available attribute.
+    socket.emit(DRIVER_ACTIVENESS_UPDATE, {
+      "is_available": true
+    });
+    socket.on(DRIVER_ACTIVENESS_UPDATE, (data){
+      debugPrint('res:: '+data.toString());
+      setState(() {
+        response = data['success'].toString();
+      });
+    });
+  }
+
   void initializeSockets(){
     try {
       String driverToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwYXlsb2FkIjp7InVzZXJfaWQiOjEwLCJwaG9uZV9udW1iZXIiOiIyMzMyMDQ5Mjc1OTAiLCJyb2xlIjoiZHJpdmVyIn0sImlhdCI6MTY0NzE4NDE2MiwiZXhwIjoxNjQ3NDQzMzYyfQ.ZLWsLjWkKhZkvQmRSZnv-gyXTEuvx6e48yVv25C2GLc';
