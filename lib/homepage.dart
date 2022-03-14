@@ -208,7 +208,7 @@ class _HomePageState extends State<HomePage> {
               TextButton(
                 child: const Text('customer ride dispatch', style: TextStyle(color: Colors.white),),
                 onPressed: (){
-                  customerDispatchRide();
+                  customerRideRequest();
                 }, 
                 style: TextButton.styleFrom(
                   backgroundColor: Colors.blue,
