@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:provider/provider.dart';
+import 'package:ride_app/other_page.dart';
+import 'package:ride_app/socket.dart';
 import 'package:ride_app/utils.dart';
 import 'package:socket_io_client/socket_io_client.dart';
 
@@ -12,19 +16,21 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  late Socket socket;
+  late Socket? socket;
   Map resDet = {};
   String status = 'pending';
   String response = "connecting to socket...";
   
   @override
   void initState() {
-    initializeSockets();
+    socket = SocketHelper().connectSocket();
+    debugPrint('${socket!.id} socket');
+    // initializeSockets();
     super.initState();
   }
   
   void customerRideRequest(){
-    socket.emit(CUSTOMER_RIDE_REQUEST,
+    socket!.emit(CUSTOMER_RIDE_REQUEST,
       {
         "distance": 5000,
         "time": 20,
@@ -37,7 +43,7 @@ class _HomePageState extends State<HomePage> {
         "drop_off_longitude": -0.1869644,
       }
     );
-    socket.on(CUSTOMER_RIDE_REQUEST, (res){
+    socket!.on(CUSTOMER_RIDE_REQUEST, (res){
       debugPrint(res.toString());
       setState(() {
         response = res['message'].toString();
@@ -47,11 +53,11 @@ class _HomePageState extends State<HomePage> {
   }
 
   void updateDriverLocation(){
-    socket.emit(DRIVER_LOCATION_UPDATE, {
+    socket!.emit(DRIVER_LOCATION_UPDATE, {
       "longitude": -0.1869644,
       "latitude": 5.6037168,
     });
-    socket.on(DRIVER_LOCATION_UPDATE, (data){
+    socket!.on(DRIVER_LOCATION_UPDATE, (data){
       debugPrint('res:: '+data.toString());
       setState(() {
         response = data['success'].toString();
@@ -61,7 +67,7 @@ class _HomePageState extends State<HomePage> {
 
   void acceptRide(){
     // debugPrint('accept ride resData:: '+resDet.toString());
-    socket.emit(DRIVER_RIDE_ACCEPTANCE, {
+    socket!.emit(DRIVER_RIDE_ACCEPTANCE, {
       "client_socket_id": resDet['client_socket_id'],
       "user_id": resDet['user_id'],
       "ride_id":resDet['ride_id']
@@ -69,10 +75,10 @@ class _HomePageState extends State<HomePage> {
   }
 
   void startRide(){
-    socket.emit(RIDE_INITIATION, {
+    socket!.emit(RIDE_INITIATION, {
       "ride_id": resDet['ride_id']
     });
-    socket.on(RIDE_INITIATION, (data){
+    socket!.on(RIDE_INITIATION, (data){
       debugPrint('res:: '+data.toString());
       setState(() {
         response = data['success'].toString();
@@ -81,10 +87,10 @@ class _HomePageState extends State<HomePage> {
   }
 
   void endRide(){
-    socket.emit(RIDE_COMPLETION, {
+    socket!.emit(RIDE_COMPLETION, {
       "ride_id": resDet['ride_id']
     });
-    socket.on(RIDE_COMPLETION, (data){
+    socket!.on(RIDE_COMPLETION, (data){
       debugPrint('res:: '+data.toString());
       setState(() {
         response = data['success'].toString();
@@ -93,10 +99,10 @@ class _HomePageState extends State<HomePage> {
   }
 
   void cancelRide(){
-    socket.emit(RIDE_CANCELLATION, {
+    socket!.emit(RIDE_CANCELLATION, {
       "ride_id": resDet['ride_id']
     });
-    socket.on(RIDE_CANCELLATION, (data){
+    socket!.on(RIDE_CANCELLATION, (data){
       debugPrint('res:: '+data.toString());
       setState(() {
         response = data['success'].toString();
@@ -106,15 +112,15 @@ class _HomePageState extends State<HomePage> {
 
   void driverActivenessUpdate (){
     //if you want to update the is online attribute
-    socket.emit(DRIVER_ACTIVENESS_UPDATE, {
+    socket!.emit(DRIVER_ACTIVENESS_UPDATE, {
       "is_online": true
     });
 
     //if you want to update is_available attribute.
-    socket.emit(DRIVER_ACTIVENESS_UPDATE, {
+    socket!.emit(DRIVER_ACTIVENESS_UPDATE, {
       "is_available": true
     });
-    socket.on(DRIVER_ACTIVENESS_UPDATE, (data){
+    socket!.on(DRIVER_ACTIVENESS_UPDATE, (data){
       debugPrint('res:: '+data.toString());
       setState(() {
         response = data['success'].toString();
@@ -122,83 +128,84 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  void initializeSockets(){
-    try {
-      String driverToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwYXlsb2FkIjp7InVzZXJfaWQiOjEwLCJwaG9uZV9udW1iZXIiOiIyMzMyMDQ5Mjc1OTAiLCJyb2xlIjoiZHJpdmVyIn0sImlhdCI6MTY0NzE4NDE2MiwiZXhwIjoxNjQ3NDQzMzYyfQ.ZLWsLjWkKhZkvQmRSZnv-gyXTEuvx6e48yVv25C2GLc';
-      String customerToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwYXlsb2FkIjp7InVzZXJfaWQiOjEsInBob25lX251bWJlciI6IjIzMzI0NTQzNjc1NyIsInJvbGUiOiJjdXN0b21lciJ9LCJpYXQiOjE2NDcxMjM5MzQsImV4cCI6MTY0NzM4MzEzNH0.SyAsYHh0ZNv0YABuFt7SP1bkp2yL8bgUdKgrGIg26LM';
-      socket = io("https://kickz-staging.herokuapp.com", <String, dynamic>{
-        "transports": ["websocket"],
-        "autoConnect": false,
-        "extraHeaders": { "Authorization": "Bearer ${widget.role == 'driver' ? driverToken : customerToken }" }
-      });
-      socket.on('unauthorized', (error){
-        debugPrint(error);
-        if (error.data.type == 'UnauthorizedError' || error.data.code == 'invalid_token') {
-          // redirect user to login page perhaps?
-          setState(() {
-            response = 'User token has expired';
-          });
-        }
-      });
-      socket.connect();  //connect the Socket.IO Client to the Server
-      //SOCKET EVENTS
-      // --> listening for connection 
-      socket.on('connect', (data) {
-        debugPrint('connected');
-        setState(() {
-          status = 'success';
-          response = '${widget.role} socket connected';
-        });
-      });
+  // void initializeSockets(){
+  //   try {
+  //     String driverToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwYXlsb2FkIjp7InVzZXJfaWQiOjEwLCJwaG9uZV9udW1iZXIiOiIyMzMyMDQ5Mjc1OTAiLCJyb2xlIjoiZHJpdmVyIn0sImlhdCI6MTY0NzE4NDE2MiwiZXhwIjoxNjQ3NDQzMzYyfQ.ZLWsLjWkKhZkvQmRSZnv-gyXTEuvx6e48yVv25C2GLc';
+  //     String customerToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwYXlsb2FkIjp7InVzZXJfaWQiOjEsInBob25lX251bWJlciI6IjIzMzI0NTQzNjc1NyIsInJvbGUiOiJjdXN0b21lciJ9LCJpYXQiOjE2NDcxMjM5MzQsImV4cCI6MTY0NzM4MzEzNH0.SyAsYHh0ZNv0YABuFt7SP1bkp2yL8bgUdKgrGIg26LM';
+  //     socket! = io("https://kickz-staging.herokuapp.com", <String, dynamic>{
+  //       "transports": ["websocket"],
+  //       "autoConnect": false,
+  //       "extraHeaders": { "Authorization": "Bearer ${widget.role == 'driver' ? driverToken : customerToken }" }
+  //     });
+  //     socket!.on('unauthorized', (error){
+  //       debugPrint(error);
+  //       if (error.data.type == 'UnauthorizedError' || error.data.code == 'invalid_token') {
+  //         // redirect user to login page perhaps?
+  //         setState(() {
+  //           response = 'User token has expired';
+  //         });
+  //       }
+  //     });
+  //     socket!.connect();  //connect the Socket.IO Client to the Server
+  //     //SOCKET EVENTS
+  //     // --> listening for connection 
+  //     socket!.on('connect', (data) {
+  //       debugPrint('connected');
+  //       setState(() {
+  //         status = 'success';
+  //         response = '${widget.role} socket! connected';
+  //       });
+  //     });
 
-      socket.on(RIDE_ON_DISPATCH, (data){
-        debugPrint('dispatch: '+data.toString());
-        setState(() {
-          response = 'DISPATCH: New location shared on this room';
-        });
-      });
+  //     socket!.on(RIDE_ON_DISPATCH, (data){
+  //       debugPrint('dispatch: '+data.toString());
+  //       setState(() {
+  //         response = 'DISPATCH: New location shared on this room';
+  //       });
+  //     });
 
-      socket.on(RIDE_CANCELLATION, (data){
+  //     socket!.on(RIDE_CANCELLATION, (data){
 
-      });
+  //     });
 
-      socket.on(RIDE_ON_TRIP, (data){
-        debugPrint('ontrip: '+data.toString());
-        setState(() {
-          response = 'ONTRIP: New location shared on this room';
-        });
-      });
+  //     socket!.on(RIDE_ON_TRIP, (data){
+  //       debugPrint('ontrip: '+data.toString());
+  //       setState(() {
+  //         response = 'ONTRIP: New location shared on this room';
+  //       });
+  //     });
 
-      socket.on(DRIVER_RIDE_ACCEPTANCE, (data){
-        debugPrint('driver acceptance: '+ data.toString());
-        setState(() {
-          resDet = data;
-          status = 'success';
-          response = widget.role == 'driver' ? 
-          'You are assigned to a customer':'A driver has been assigned to you.';
-        });
-      });
+  //     socket!.on(DRIVER_RIDE_ACCEPTANCE, (data){
+  //       debugPrint('driver acceptance: '+ data.toString());
+  //       setState(() {
+  //         resDet = data;
+  //         status = 'success';
+  //         response = widget.role == 'driver' ? 
+  //         'You are assigned to a customer':'A driver has been assigned to you.';
+  //       });
+  //     });
       
-      socket.on(RIDE_REQUEST_DRIVER_NOTIFICATION, (data){
-        debugPrint('notification init: ${data.toString()}');
-        setState(() {
-          status = 'pending';
-          response = 'A new ride request available. Accept ride';
-          resDet = data;
-        });
-      });
-      //listens when the client is disconnected from the Server 
-      socket.on('disconnect', (data) {
-        debugPrint('disconnect" '+data);
-      });
-    } catch (e) {
-      debugPrint('err ${e.toString()}');
-    }
-  }
+  //     socket!.on(RIDE_REQUEST_DRIVER_NOTIFICATION, (data){
+  //       debugPrint('notification init: ${data.toString()}');
+  //       setState(() {
+  //         status = 'pending';
+  //         response = 'A new ride request available. Accept ride';
+  //         resDet = data;
+  //       });
+  //     });
+  //     //listens when the client is disconnected from the Server 
+  //     socket!.on('disconnect', (data) {
+  //       debugPrint('disconnect" '+data);
+  //     });
+  //   } catch (e) {
+  //     debugPrint('err ${e.toString()}');
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
     TextEditingController _promoCodeController = TextEditingController();
+    debugPrint(socket!.id);
     return Scaffold(
       appBar: AppBar(
         title: Text('${widget.role} dashboard -- id:${widget.id}'),
@@ -215,13 +222,19 @@ class _HomePageState extends State<HomePage> {
                   hintText: 'Enter promo code if any'
                 ),
               ),
-              Text(response, style: TextStyle(
-                  fontSize: 20, fontWeight: FontWeight.bold,
-                  color: status == 'success' ? Colors.green 
-                  : status == 'failed' ? Colors.red :
-                  Colors.amber 
-                )
+              Consumer<SocketHelper>(
+                builder: ((context, value, child) => 
+                  Text(value.response, style: TextStyle(
+                      fontSize: 20, fontWeight: FontWeight.bold,
+                      color: status == 'success' ? Colors.green 
+                      : status == 'failed' ? Colors.red :
+                      Colors.amber 
+                    )
+                  )
+                ),
               ),
+              const SizedBox(height: 20),
+              TextButton(onPressed: ()=>Navigator.push(context, MaterialPageRoute(builder: (builder)=>OtherPage())), child: Text('Next Page')),
               const SizedBox(height: 20),
               TextButton(
                 child: const Text('customer ride request', style: TextStyle(color: Colors.white),),
