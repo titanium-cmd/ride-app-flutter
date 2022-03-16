@@ -17,13 +17,13 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   late Socket? socket;
-  Map resDet = {};
+  Map resDet = SocketHelper().getData;
   String status = 'pending';
   String response = "connecting to socket...";
   
   @override
   void initState() {
-    socket = SocketHelper().connectSocket();
+    socket = SocketHelper().connectSocket(role: widget.role);
     debugPrint('${socket!.id} socket');
     // initializeSockets();
     super.initState();
@@ -57,6 +57,18 @@ class _HomePageState extends State<HomePage> {
 
   void driverAtPickup(){
     socket!.emit(DRIVER_AT_PICKUP, {
+      "ride_id": resDet['ride_id'],
+    });
+    socket!.on(DRIVER_AT_PICKUP, (data){
+      debugPrint('res:: '+data.toString());
+      setState(() {
+        response = data['success'].toString();
+      });
+    });
+  }
+
+  void driverRideReject(){
+    socket!.emit(DRIVER_RIDE_REJECT, {
       "ride_id": resDet['ride_id'],
     });
     socket!.on(DRIVER_AT_PICKUP, (data){
@@ -129,80 +141,6 @@ class _HomePageState extends State<HomePage> {
       });
     });
   }
-
-  // void initializeSockets(){
-  //   try {
-  //     String driverToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwYXlsb2FkIjp7InVzZXJfaWQiOjEwLCJwaG9uZV9udW1iZXIiOiIyMzMyMDQ5Mjc1OTAiLCJyb2xlIjoiZHJpdmVyIn0sImlhdCI6MTY0NzE4NDE2MiwiZXhwIjoxNjQ3NDQzMzYyfQ.ZLWsLjWkKhZkvQmRSZnv-gyXTEuvx6e48yVv25C2GLc';
-  //     String customerToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwYXlsb2FkIjp7InVzZXJfaWQiOjEsInBob25lX251bWJlciI6IjIzMzI0NTQzNjc1NyIsInJvbGUiOiJjdXN0b21lciJ9LCJpYXQiOjE2NDcxMjM5MzQsImV4cCI6MTY0NzM4MzEzNH0.SyAsYHh0ZNv0YABuFt7SP1bkp2yL8bgUdKgrGIg26LM';
-  //     socket! = io("https://kickz-staging.herokuapp.com", <String, dynamic>{
-  //       "transports": ["websocket"],
-  //       "autoConnect": false,
-  //       "extraHeaders": { "Authorization": "Bearer ${widget.role == 'driver' ? driverToken : customerToken }" }
-  //     });
-  //     socket!.on('unauthorized', (error){
-  //       debugPrint(error);
-  //       if (error.data.type == 'UnauthorizedError' || error.data.code == 'invalid_token') {
-  //         // redirect user to login page perhaps?
-  //         setState(() {
-  //           response = 'User token has expired';
-  //         });
-  //       }
-  //     });
-  //     socket!.connect();  //connect the Socket.IO Client to the Server
-  //     //SOCKET EVENTS
-  //     // --> listening for connection 
-  //     socket!.on('connect', (data) {
-  //       debugPrint('connected');
-  //       setState(() {
-  //         status = 'success';
-  //         response = '${widget.role} socket! connected';
-  //       });
-  //     });
-
-  //     socket!.on(RIDE_ON_DISPATCH, (data){
-  //       debugPrint('dispatch: '+data.toString());
-  //       setState(() {
-  //         response = 'DISPATCH: New location shared on this room';
-  //       });
-  //     });
-
-  //     socket!.on(RIDE_CANCELLATION, (data){
-
-  //     });
-
-  //     socket!.on(RIDE_ON_TRIP, (data){
-  //       debugPrint('ontrip: '+data.toString());
-  //       setState(() {
-  //         response = 'ONTRIP: New location shared on this room';
-  //       });
-  //     });
-
-  //     socket!.on(DRIVER_RIDE_ACCEPTANCE, (data){
-  //       debugPrint('driver acceptance: '+ data.toString());
-  //       setState(() {
-  //         resDet = data;
-  //         status = 'success';
-  //         response = widget.role == 'driver' ? 
-  //         'You are assigned to a customer':'A driver has been assigned to you.';
-  //       });
-  //     });
-      
-  //     socket!.on(RIDE_REQUEST_DRIVER_NOTIFICATION, (data){
-  //       debugPrint('notification init: ${data.toString()}');
-  //       setState(() {
-  //         status = 'pending';
-  //         response = 'A new ride request available. Accept ride';
-  //         resDet = data;
-  //       });
-  //     });
-  //     //listens when the client is disconnected from the Server 
-  //     socket!.on('disconnect', (data) {
-  //       debugPrint('disconnect" '+data);
-  //     });
-  //   } catch (e) {
-  //     debugPrint('err ${e.toString()}');
-  //   }
-  // }
 
   @override
   Widget build(BuildContext context) {
