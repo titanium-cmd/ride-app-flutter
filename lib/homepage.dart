@@ -31,17 +31,7 @@ class _HomePageState extends State<HomePage> {
   
   void customerRideRequest(){
     socket!.emit(CUSTOMER_RIDE_REQUEST,
-      {
-        "distance": 5000,
-        "time": 20,
-        "origin_description": '',
-        "destination_description": '',
-        "vehicle_id": 1,
-        "pickup_longitude": -0.1869644,
-        "pickup_latitude": 5.6037168,
-        "drop_off_latitude": 5.6037168,
-        "drop_off_longitude": -0.1869644,
-      }
+      {"vehicle_id":1,"pickup_longitude":-0.220942,"pickup_latitude":5.604452,"drop_off_latitude":5.554162300000001,"drop_off_longitude":-0.1843724,"distance":11096,"time":1490,"origin_description":"Onyankle Street, Ablenkpe","destination_description":"Osu Presby Church Hall, Oxford Street, Accra, Ghana"}
     );
     socket!.on(CUSTOMER_RIDE_REQUEST, (res){
       debugPrint(res.toString());
@@ -58,6 +48,18 @@ class _HomePageState extends State<HomePage> {
       "latitude": 5.6037168,
     });
     socket!.on(DRIVER_LOCATION_UPDATE, (data){
+      debugPrint('res:: '+data.toString());
+      setState(() {
+        response = data['success'].toString();
+      });
+    });
+  }
+
+  void driverAtPickup(){
+    socket!.emit(DRIVER_AT_PICKUP, {
+      "ride_id": resDet['ride_id'],
+    });
+    socket!.on(DRIVER_AT_PICKUP, (data){
       debugPrint('res:: '+data.toString());
       setState(() {
         response = data['success'].toString();
