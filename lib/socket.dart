@@ -61,10 +61,6 @@ class SocketHelper extends ChangeNotifier{
 
       });
 
-      socket.on(RIDE_CANCELLATION, (data){
-
-      });
-
       socket.on(RIDE_ON_TRIP, (data){
         debugPrint('ontrip: '+data.toString());
         // setState(() {
