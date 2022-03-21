@@ -42,99 +42,11 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  void updateDriverLocation(){
-    socket!.emit(DRIVER_LOCATION_UPDATE, {
-      "longitude": -0.1869644,
-      "latitude": 5.6037168,
-    });
-    socket!.on(DRIVER_LOCATION_UPDATE, (data){
-      debugPrint('res:: '+data.toString());
-      setState(() {
-        response = data['success'].toString();
-      });
-    });
-  }
-
-  void driverAtPickup(){
-    socket!.emit(DRIVER_AT_PICKUP, {
-      "ride_id": resDet['ride_id'],
-    });
-    socket!.on(DRIVER_AT_PICKUP, (data){
-      debugPrint('res:: '+data.toString());
-      setState(() {
-        response = data['success'].toString();
-      });
-    });
-  }
-
-  void driverRideReject(){
-    socket!.emit(DRIVER_RIDE_REJECT, {
-      "ride_id": resDet['ride_id'],
-    });
-    socket!.on(DRIVER_AT_PICKUP, (data){
-      debugPrint('res:: '+data.toString());
-      setState(() {
-        response = data['success'].toString();
-      });
-    });
-  }
-
-  void acceptRide(){
-    // debugPrint('accept ride resData:: '+resDet.toString());
-    socket!.emit(DRIVER_RIDE_ACCEPTANCE, {
-      "client_socket_id": resDet['client_socket_id'],
-      "user_id": resDet['user_id'],
-      "ride_id":resDet['ride_id']
-    });
-  }
-
-  void startRide(){
-    socket!.emit(RIDE_INITIATION, {
-      "ride_id": resDet['ride_id']
-    });
-    socket!.on(RIDE_INITIATION, (data){
-      debugPrint('res:: '+data.toString());
-      setState(() {
-        response = data['success'].toString();
-      });
-    });
-  }
-
-  void endRide(){
-    socket!.emit(RIDE_COMPLETION, {
-      "ride_id": resDet['ride_id']
-    });
-    socket!.on(RIDE_COMPLETION, (data){
-      debugPrint('res:: '+data.toString());
-      setState(() {
-        response = data['success'].toString();
-      });
-    });
-  }
-
   void cancelRide(){
     socket!.emit(RIDE_CANCELLATION, {
       "ride_id": resDet['ride_id']
     });
     socket!.on(RIDE_CANCELLATION, (data){
-      debugPrint('res:: '+data.toString());
-      setState(() {
-        response = data['success'].toString();
-      });
-    });
-  }
-
-  void driverActivenessUpdate (){
-    //if you want to update the is online attribute
-    socket!.emit(DRIVER_ACTIVENESS_UPDATE, {
-      "is_online": true
-    });
-
-    //if you want to update is_available attribute.
-    socket!.emit(DRIVER_ACTIVENESS_UPDATE, {
-      "is_available": true
-    });
-    socket!.on(DRIVER_ACTIVENESS_UPDATE, (data){
       debugPrint('res:: '+data.toString());
       setState(() {
         response = data['success'].toString();
@@ -156,12 +68,6 @@ class _HomePageState extends State<HomePage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              TextField(
-                controller: _promoCodeController,
-                decoration: const InputDecoration(
-                  hintText: 'Enter promo code if any'
-                ),
-              ),
               Text(SocketHelper().response, style: TextStyle(
                   fontSize: 20, fontWeight: FontWeight.bold,
                   color: status == 'success' ? Colors.green 
@@ -181,18 +87,7 @@ class _HomePageState extends State<HomePage> {
                   backgroundColor: Colors.blue,
                   padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 18)
                 ),
-              ),
-              const SizedBox(height: 20),
-              TextButton(
-                child: const Text('end ride', style: TextStyle(color: Colors.white),),
-                onPressed: (){
-                  endRide();
-                }, 
-                style: TextButton.styleFrom(
-                  backgroundColor: Colors.green,
-                  padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 18)
-                ),
-              ),
+              ),              
               const SizedBox(height: 20),
               TextButton(
                 child: const Text('cancel ride', style: TextStyle(color: Colors.white),),
@@ -201,39 +96,6 @@ class _HomePageState extends State<HomePage> {
                 }, 
                 style: TextButton.styleFrom(
                   backgroundColor: Colors.red,
-                  padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 18)
-                ),
-              ),
-              const SizedBox(height: 20),
-              TextButton(
-                child: const Text('update location', style: TextStyle(color: Colors.white),),
-                onPressed: (){
-                  updateDriverLocation();
-                }, 
-                style: TextButton.styleFrom(
-                  backgroundColor: Colors.blue,
-                  padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 18)
-                ),
-              ),
-              const SizedBox(height: 20),
-              TextButton(
-                child: const Text('start ride', style: TextStyle(color: Colors.white),),
-                onPressed: (){
-                  startRide();
-                }, 
-                style: TextButton.styleFrom(
-                  backgroundColor: Colors.green,
-                  padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 18)
-                ),
-              ),
-              const SizedBox(height: 20),
-              TextButton(
-                child: const Text('accept ride', style: TextStyle(color: Colors.white),),
-                onPressed: (){
-                  acceptRide();
-                }, 
-                style: TextButton.styleFrom(
-                  backgroundColor: Colors.green,
                   padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 18)
                 ),
               ),
