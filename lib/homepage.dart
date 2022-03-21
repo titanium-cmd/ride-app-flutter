@@ -25,15 +25,14 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     socket = SocketHelper().connectSocket(role: widget.role);
     debugPrint('${socket!.id} socket');
-    // initializeSockets();
     super.initState();
   }
   
-  void customerRideRequest(){
-    socket!.emit(CUSTOMER_RIDE_REQUEST,
+  void emitCustomerRideRequest(){
+    socket!.emit(customerRideRequest,
       {"vehicle_id":1,"pickup_longitude":-0.220942,"pickup_latitude":5.604452,"drop_off_latitude":5.554162300000001,"drop_off_longitude":-0.1843724,"distance":11096,"time":1490,"origin_description":"Onyankle Street, Ablenkpe","destination_description":"Osu Presby Church Hall, Oxford Street, Accra, Ghana"}
     );
-    socket!.on(CUSTOMER_RIDE_REQUEST, (res){
+    socket!.on(customerRideRequest, (res){
       debugPrint(res.toString());
       setState(() {
         response = res['message'].toString();
@@ -43,10 +42,10 @@ class _HomePageState extends State<HomePage> {
   }
 
   void cancelRide(){
-    socket!.emit(RIDE_CANCELLATION, {
+    socket!.emit(rideCancellation, {
       "ride_id": resDet['ride_id']
     });
-    socket!.on(RIDE_CANCELLATION, (data){
+    socket!.on(rideCancellation, (data){
       debugPrint('res:: '+data.toString());
       setState(() {
         response = data['success'].toString();
@@ -56,7 +55,6 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    TextEditingController _promoCodeController = TextEditingController();
     debugPrint(socket!.id);
     return Scaffold(
       appBar: AppBar(
@@ -81,7 +79,7 @@ class _HomePageState extends State<HomePage> {
               TextButton(
                 child: const Text('customer ride request', style: TextStyle(color: Colors.white),),
                 onPressed: (){
-                  customerRideRequest();
+                  emitCustomerRideRequest();
                 }, 
                 style: TextButton.styleFrom(
                   backgroundColor: Colors.blue,
