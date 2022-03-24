@@ -44,19 +44,13 @@ class SocketHelper extends ChangeNotifier{
         notifyListeners();
       });
 
-      socket.on(rideOnDispatch, (data){
-        debugPrint('dispatch: '+data.toString());
-        setMessage('DISPATCH: New location shared on this room');
+      socket.on(rideCancellation, (data){
+
         notifyListeners();
       });
 
-      socket.on(rideCancellation, (data){
+      socket.on(driverLocationUpdate, (data){
 
-      });
-
-      socket.on(rideOnTrip, (data){
-        debugPrint('ontrip: '+data.toString());
-        _response = 'ONTRIP: New location shared on this room';
         notifyListeners();
       });
 

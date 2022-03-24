@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:provider/provider.dart';
 import 'package:ride_app/other_page.dart';
 import 'package:ride_app/socket.dart';
 import 'package:ride_app/utils.dart';
