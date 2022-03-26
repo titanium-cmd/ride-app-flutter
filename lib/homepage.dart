@@ -22,6 +22,7 @@ class _HomePageState extends State<HomePage> {
     super.initState();
   }
   
+  // call when customer wants to request for new ride
   void rideRequest(){
     socket!.emit(customerRideRequest,
       {
@@ -40,6 +41,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  // call when customer wants to cancel a ride
   void cancelRide(){
     socket!.emit(rideCancellation, {
       "ride_id": resDet['ride_id']
