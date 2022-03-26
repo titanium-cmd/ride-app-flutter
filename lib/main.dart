@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:ride_app/homepage.dart';
-import 'package:ride_app/intro_page.dart';
 import 'package:ride_app/socket.dart';
 
 void main() {
@@ -24,7 +23,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const IntroPage()
+      home: const HomePage()
     );
   }
 }

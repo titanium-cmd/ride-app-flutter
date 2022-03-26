@@ -44,20 +44,47 @@ class SocketHelper extends ChangeNotifier{
         notifyListeners();
       });
 
+      //is triggered when customer request a ride.
+      socket.on(customerRideRequest, (res){
+        debugPrint(res.toString());
+
+      });
+
+      //is triggered when a driver or customer cancels a ride.
       socket.on(rideCancellation, (data){
+        debugPrint('cancelled:: '+data.toString());
 
-        notifyListeners();
       });
 
+      //is triggered when a driver updates location.
       socket.on(driverLocationUpdate, (data){
+        debugPrint('location update:: '+data.toString());
+        
+      });
 
+      //is triggered when a driver gets pickup location.
+      socket.on(driverAtPickup, (data){
+        debugPrint('at pickup:: '+data.toString());
+
+      });
+
+      //is triggered when a driver gets destination.
+      socket.on(driverAtDestination, (data){
+        debugPrint('at destination:: '+data.toString());
+
+      });
+
+      //is triggered when a driver accepts customer pending ride
+      socket.on(driverRideAcceptance, (data){
+        debugPrint('driver acceptance: '+ data.toString());
+        resData = data;
         notifyListeners();
       });
 
-      //listens when the client is disconnected from the Server 
+      //triggered when the customer is disconnected from the Server 
       socket.on('disconnect', (data) {
-        notifyListeners();
         debugPrint('disconnect" '+data);
+        notifyListeners();
       });
       return socket;
     } catch (e) {
